@@ -295,7 +295,7 @@ class Channel:
             arguments = {}
 
         if not queue_name:
-            queue_name = 'aioamqp.gen-' + str(uuid.uuid4())
+            queue_name = ''
         request = pamqp.commands.Queue.Declare(
             queue=queue_name,
             passive=passive,
@@ -306,7 +306,7 @@ class Channel:
             arguments=arguments
         )
         return (await self._write_frame_awaiting_response(
-            'queue_declare' + queue_name, self.channel_id, request, no_wait))
+            'queue_declare', self.channel_id, request, no_wait))
 
     async def queue_declare_ok(self, frame):
         results = {
@@ -314,7 +314,7 @@ class Channel:
             'message_count': frame.message_count,
             'consumer_count': frame.consumer_count,
         }
-        future = self._get_waiter('queue_declare' + results['queue'])
+        future = self._get_waiter('queue_declare')
         future.set_result(results)
         logger.debug("Queue declared")
 
